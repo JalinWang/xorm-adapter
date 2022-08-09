@@ -36,7 +36,7 @@ func (the *CasbinRule) TableName() string {
 
 // CasbinRule  .
 type CasbinRule struct {
-	Ptype string `xorm:"varchar(100) index not null default ''"`
+	PType string `xorm:"varchar(100) index not null default ''"`
 	V0    string `xorm:"varchar(100) index not null default ''"`
 	V1    string `xorm:"varchar(100) index not null default ''"`
 	V2    string `xorm:"varchar(100) index not null default ''"`
@@ -60,7 +60,7 @@ type Adapter struct {
 
 // Filter  .
 type Filter struct {
-	Ptype []string
+	PType []string
 	V0    []string
 	V1    []string
 	V2    []string
@@ -249,7 +249,7 @@ func (a *Adapter) dropTable() error {
 }
 
 func loadPolicyLine(line *CasbinRule, model model.Model) {
-	var p = []string{line.Ptype,
+	var p = []string{line.PType,
 		line.V0, line.V1, line.V2, line.V3, line.V4, line.V5}
 	var lineText string
 	if line.V5 != "" {
@@ -285,7 +285,7 @@ func (a *Adapter) LoadPolicy(model model.Model) error {
 }
 
 func (a *Adapter) genPolicyLine(ptype string, rule []string) *CasbinRule {
-	line := CasbinRule{Ptype: ptype, tableName: a.getFullTableName()}
+	line := CasbinRule{PType: ptype, tableName: a.getFullTableName()}
 
 	l := len(rule)
 	if l > 0 {
@@ -393,7 +393,7 @@ func (a *Adapter) RemovePolicies(sec string, ptype string, rules [][]string) err
 
 // RemoveFilteredPolicy removes policy rules that match the filter from the storage.
 func (a *Adapter) RemoveFilteredPolicy(sec string, ptype string, fieldIndex int, fieldValues ...string) error {
-	line := CasbinRule{Ptype: ptype, tableName: a.getFullTableName()}
+	line := CasbinRule{PType: ptype, tableName: a.getFullTableName()}
 
 	idx := fieldIndex + len(fieldValues)
 	if fieldIndex <= 0 && idx > 0 {
@@ -448,7 +448,7 @@ func (a *Adapter) filterQuery(session *xorm.Session, filter Filter) *xorm.Sessio
 		col string
 		val []string
 	}{
-		{"ptype", filter.Ptype},
+		{"p_type", filter.PType},
 		{"v0", filter.V0},
 		{"v1", filter.V1},
 		{"v2", filter.V2},
@@ -501,7 +501,7 @@ func (a *Adapter) UpdateFilteredPolicies(sec string, ptype string, newPolicies [
 	// UpdateFilteredPolicies deletes old rules and adds new rules.
 	line := &CasbinRule{}
 
-	line.Ptype = ptype
+	line.PType = ptype
 	if fieldIndex <= 0 && 0 < fieldIndex+len(fieldValues) {
 		line.V0 = fieldValues[0-fieldIndex]
 	}
@@ -557,8 +557,8 @@ func (a *Adapter) UpdateFilteredPolicies(sec string, ptype string, newPolicies [
 
 func (c *CasbinRule) toStringPolicy() []string {
 	policy := make([]string, 0)
-	if c.Ptype != "" {
-		policy = append(policy, c.Ptype)
+	if c.PType != "" {
+		policy = append(policy, c.PType)
 	}
 	if c.V0 != "" {
 		policy = append(policy, c.V0)
@@ -582,9 +582,9 @@ func (c *CasbinRule) toStringPolicy() []string {
 }
 
 func (c *CasbinRule) queryString() (interface{}, []interface{}) {
-	queryArgs := []interface{}{c.Ptype}
+	queryArgs := []interface{}{c.PType}
 
-	queryStr := "ptype = ?"
+	queryStr := "p_type = ?"
 	if c.V0 != "" {
 		queryStr += " and v0 = ?"
 		queryArgs = append(queryArgs, c.V0)
